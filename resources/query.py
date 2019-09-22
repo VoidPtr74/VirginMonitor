@@ -18,6 +18,8 @@ DOWNSTREAM_CHANNEL_ID_PREFIX = "1.3.6.1.2.1.10.127.1.1.1.1.1."
 DOWNSTREAM_CHANNEL_FREQUENCY_PREFIX = "1.3.6.1.2.1.10.127.1.1.1.1.2."
 DOWNSTREAM_CHANNEL_POWER_10X_PREFIX = "1.3.6.1.2.1.10.127.1.1.1.1.6."
 DOWNSTREAM_CHANNEL_SNR_PREFIX = "1.3.6.1.2.1.10.127.1.1.4.1.5."
+DOWNSTREAM_CHANNEL_PRERS_PREFIX = "1.3.6.1.2.1.10.127.1.1.4.1.3."
+DOWNSTREAM_CHANNEL_POSTRS_PREFIX = "1.3.6.1.2.1.10.127.1.1.4.1.3."
 
 gauge_downstream_channel_count = Gauge('channel_downstream_count', 'How many downstream channels are active?')
 gauge_downstream_channel_count.set(math.nan)
@@ -33,6 +35,8 @@ gauges_channel_upstream_frequency = dict()
 gauges_channel_downstream_power = dict()
 gauges_channel_downstream_snr = dict()
 gauges_channel_downstream_frequency = dict()
+gauges_channel_downstream_prers = dict()
+gauges_channel_downstream_postrs = dict()
 
 
 def loop():
@@ -60,6 +64,10 @@ def loop():
     downstream_snr_per_channel_x10 = \
         get_data_from_json(loaded_json, DOWNSTREAM_CHANNEL_SNR_PREFIX, downstream_key_ids, float)
     downstream_snr_per_channel = list(map(lambda x: x / 10.0, downstream_snr_per_channel_x10))
+    downstream_prers_per_channel = \
+        get_data_from_json(loaded_json, DOWNSTREAM_CHANNEL_PRERS_PREFIX, downstream_key_ids, int)
+    downstream_postrs_per_channel = \
+        get_data_from_json(loaded_json, DOWNSTREAM_CHANNEL_POSTRS_PREFIX, downstream_key_ids, int)
 
     gauge_downstream_channel_count.set(downstream_channel_count)
     gauge_upstream_channel_count.set(upstream_channel_count)
@@ -71,6 +79,8 @@ def loop():
     init_multiple_gauges(gauges_channel_downstream_power, downstream_channel_ids)
     init_multiple_gauges(gauges_channel_downstream_snr, downstream_channel_ids)
     init_multiple_gauges(gauges_channel_downstream_frequency, downstream_channel_ids)
+    init_multiple_gauges(gauges_channel_downstream_prers, downstream_channel_ids)
+    init_multiple_gauges(gauges_channel_downstream_postrs, downstream_channel_ids)
 
     for i in range(len(upstream_channel_ids)):
         set_gauge_value(upstream_channel_ids[i], upstream_power_per_channel[i], gauges_channel_upstream_power,
@@ -87,6 +97,11 @@ def loop():
         # Frequency
         set_gauge_value(downstream_channel_ids[i], downstream_frequency_per_channel[i], gauges_channel_downstream_frequency,
                         "channel_downstream_frequency_hz_", "Frequency for downstream channel ")
+        # Error counts
+        set_gauge_value(downstream_channel_ids[i], downstream_prers_per_channel[i], gauges_channel_downstream_prers,
+                        "channel_downstream_prers_number_", "Number of Pre-RS failures in channel ")
+        set_gauge_value(downstream_channel_ids[i], downstream_postrs_per_channel[i], gauges_channel_downstream_postrs,
+                        "channel_downstream_postrs_number_", "Number of Post-RS failures in channel ")
 
 
 def set_gauge_value(channel_id, value, gauges, name_prefix, desc_prefix):
