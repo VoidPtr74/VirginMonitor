@@ -23,9 +23,9 @@ gauge_downstream_channel_count = Gauge('channel_downstream_count', 'How many dow
 gauge_downstream_channel_count.set(math.nan)
 gauge_upstream_channel_count = Gauge('channel_upstream_count', 'How many upstream channels are active?')
 gauge_upstream_channel_count.set(math.nan)
-gauge_total_downstream_power = Gauge('total_downstream_power', 'Total downstream power (dbmV (10log10))')
+gauge_total_downstream_power = Gauge('total_downstream_power_dbmv', 'Total downstream power (dBmV (10log10))')
 gauge_total_downstream_power.set(math.nan)
-gauge_total_upstream_power = Gauge('total_upstream_power', 'Total upstream power (dbmV (10log10))')
+gauge_total_upstream_power = Gauge('total_upstream_power_dbmv', 'Total upstream power (dBmV (10log10))')
 gauge_total_upstream_power.set(math.nan)
 
 gauges_channel_upstream_power = dict()
@@ -74,19 +74,19 @@ def loop():
 
     for i in range(len(upstream_channel_ids)):
         set_gauge_value(upstream_channel_ids[i], upstream_power_per_channel[i], gauges_channel_upstream_power,
-                        "channel_upstream_power_", "Power for upstream channel ")
+                        "channel_upstream_power_dbmv_", "Power for upstream channel ")
         set_gauge_value(upstream_channel_ids[i], upstream_frequency_per_channel[i], gauges_channel_upstream_frequency,
-                        "channel_upstream_frequency_", "Frequency for upstream channel ")
+                        "channel_upstream_frequency_hz_", "Frequency for upstream channel ")
     for i in range(len(downstream_channel_ids)):
         # DS power
         set_gauge_value(downstream_channel_ids[i], downstream_power_per_channel[i], gauges_channel_downstream_power,
-                        "channel_downstream_power_", "power for downstream channel ")
+                        "channel_downstream_power_dbmv_", "Power for downstream channel ")
         # SNR
         set_gauge_value(downstream_channel_ids[i], downstream_snr_per_channel[i], gauges_channel_downstream_snr,
-                        "channel_downstream_snr_", "SNR for downstream channel ")
+                        "channel_downstream_snr_db_", "SNR for downstream channel ")
         # Frequency
         set_gauge_value(downstream_channel_ids[i], downstream_frequency_per_channel[i], gauges_channel_downstream_frequency,
-                        "channel_downstream_frequency_", "Frequency for downstream channel ")
+                        "channel_downstream_frequency_hz_", "Frequency for downstream channel ")
 
 
 def set_gauge_value(channel_id, value, gauges, name_prefix, desc_prefix):
