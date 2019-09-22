@@ -1,2 +1,2 @@
 sudo docker build -t virginmonitor .
-sudo docker run -p 9090:9090 virginmonitor
+sudo docker run -d -p 9090:9090 --name virginmonitor virginmonitor 
